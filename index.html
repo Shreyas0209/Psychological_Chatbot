@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mano | Psychological Therapist</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Mano</h2>
+            <p>The Psychological Therapist</p>
+        </div>
+        <div class="chat-box" id="chat-box">
+            <div class="chat-message bot-message">
+                <p>Hello! I am a chatbot designed to be a safe space for your thoughts. How are you feeling today?</p>
+            </div>
+        </div>
+        <form class="chat-input" id="chat-form">
+            <input type="text" id="user-input" placeholder="Share your thoughts..." autocomplete="off">
+            <button type="submit" aria-label="Send Message">&#10148;</button>
+        </form>
+        <div class="footer">
+            <p>This is not a substitute for professional therapy. If you are in crisis, please seek immediate help.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('chat-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userInput = document.getElementById('user-input');
+            const message = userInput.value.trim();
+
+            if (message === '') return;
+
+            // Display user message
+            appendMessage('user', message);
+            userInput.value = '';
+
+            // Get bot response
+            fetch(`/get?msg=${encodeURIComponent(message)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Add a slight delay for bot response to feel more natural
+                    setTimeout(() => {
+                        appendMessage('bot', data);
+                    }, 500); 
+                });
+        });
+
+        function appendMessage(sender, text) {
+            const chatBox = document.getElementById('chat-box');
+            const messageDiv = document.createElement('div');
+            // Add animation class
+            messageDiv.classList.add('chat-message', `${sender}-message`, 'fade-in'); 
+            
+            const p = document.createElement('p');
+            p.textContent = text;
+            messageDiv.appendChild(p);
+            
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
